@@ -1,0 +1,5 @@
+# generated build artifact — tracked anyway for gh-pages simplicity, but never edit by hand
+# data/incidents.json IS the curated source of truth (hand-edited)
+data/incidents.json.bak
+*.tmp
+.DS_Store
