@@ -37,6 +37,7 @@ def main():
     }
     data["metadata"]["totalIncidents"] = len(inc)
     data["metadata"]["disclosureLagMedianDays"] = median
+    data["metadata"]["lastUpdated"] = today.isoformat()
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w") as f:
