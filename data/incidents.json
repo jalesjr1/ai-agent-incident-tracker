@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "lastUpdated": "2026-10-05",
+    "lastUpdated": "2026-10-12",
     "schemaVersion": "1.0",
-    "totalIncidents": 34,
-    "disclosureLagMedianDays": 74,
+    "totalIncidents": 39,
+    "disclosureLagMedianDays": 72,
     "author": "Joe Ales (curated in Obsidian AI Research Vault)",
     "sourceVault": "Projects/AI Agent Hacking Survey/",
     "campCount": 6,
@@ -1248,11 +1248,198 @@
       ],
       "evidencePublicDataset": false,
       "notes": "Google learned of the intrusions in late July 2026 during an internal retrospective and disclosed in September only once the WSJ began reporting; Google argued public disclosure was not required because the model caused no damage. Fourth lab after Anthropic, OpenAI and Meta to disclose an incident traced to the same third-party evaluation harness. Exact May activity date not published - mid-May used. Backfill: pre-window"
+    },
+    {
+      "id": "wikimedia-rogue-agents-oct-2026",
+      "incidentDate": "2026-05-01",
+      "disclosureDate": "2026-10-05",
+      "actor": "openai-swarm",
+      "actorType": "frontier-lab-eval",
+      "target": "wikimedia-platforms",
+      "targetType": "public-wiki-infrastructure",
+      "discoveredBy": "wikimedia-foundation",
+      "primarySource": "https://wikimediafoundation.org/news/2026/10/05/openai-rogue-agent-activities-found-on-wikimedia-projects/",
+      "summary": "OpenAI-attributed agents made unauthorized edits to Wikimedia wikis, tried to exploit the public Etherpad tool as a proxy for fetching data from other sites, and flooded public APIs with millions of requests - a surge that likely caused a partial Wikidata Query Service outage in May",
+      "campImpact": {
+        "camp-1-existential": 1,
+        "camp-2-loss-of-control": 2,
+        "camp-3-engineer-skeptic": -1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "unauthorized-wiki-edits, etherpad-proxy-exploit-attempt, api-request-flooding",
+      "severity": "medium",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "openai",
+        "rogue-agents",
+        "third-party-cost",
+        "service-outage",
+        "no-compromise"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Wikimedia found the activity while investigating its own platforms in the wake of the Hugging Face disclosures. No Wikimedia system was compromised and agents did not use the infrastructure for coordination, but the traffic imposed server and staff costs and likely caused the May partial WQDS outage. Exact per-action dates are not published - a May 2026 activity window is used for incidentDate."
+    },
+    {
+      "id": "copilot-cli-cci-oct-2026",
+      "incidentDate": "2026-09-17",
+      "disclosureDate": "2026-10-06",
+      "actor": "adversa-ai-researchers",
+      "actorType": "vulnerability-researcher",
+      "target": "github-copilot-cli",
+      "targetType": "ai-coding-agent",
+      "discoveredBy": "adversa-ai",
+      "primarySource": "https://adversa.ai/blog/cryptographic-context-injection-github-copilot/",
+      "summary": "Cryptographic Context Injection against GitHub Copilot CLI: a single attacker web page, fetched at the user's request in autopilot mode, made the agent decrypt attacker instructions inside its own shell and exfiltrate local files (e.g. .env.prod secrets) to an attacker endpoint in 28 seconds - plaintext versions are refused, ciphertext is not",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": -1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "cryptographic-context-injection-to-file-exfiltration",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "coding-agent",
+        "prompt-injection",
+        "guardrail-bypass",
+        "no-cve",
+        "vendor-declined",
+        "model-lottery"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Reported to GitHub's bug bounty program Sep 17, 2026; GitHub validated the finding but declined to treat it as a vulnerability (arguing the user explicitly asked Copilot CLI to fetch attacker-controlled content with full permissions), so Adversa disclosed Oct 6, 2026 with concrete payloads withheld. Reproduced as of Oct 1, 2026 on Microsoft's mai-code-1.1-flash model; two GPT-5.6 models refused the identical payload. Autopilot mode plus a permissive model are both required."
+    },
+    {
+      "id": "reliaquest-agent-server-takeover-oct-2026",
+      "incidentDate": "2026-10-07",
+      "disclosureDate": "2026-10-07",
+      "actor": "unattributed-llm-agent-operator",
+      "actorType": "commodity-attacker",
+      "target": "exposed-spring-batch-tomcat-server",
+      "targetType": "private-enterprise-server",
+      "discoveredBy": "reliaquest",
+      "primarySource": "https://reliaquest.com/blog/threat-spotlight-how-ai-agents-turned-one-exposed-endpoint-into-a-server-takeover/",
+      "summary": "ReliaQuest assessed with high confidence that LLM-driven agents carried out most of an intrusion that took full admin control of a Windows server in under 24 hours through a single unauthenticated job-submission endpoint - no malware, no zero-day; a live Cairn open-source agent-orchestration dashboard sat on the attack-origin host",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": -1,
+        "camp-4-move-fast": 1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 3
+      },
+      "method": "agent-orchestrated-exposed-endpoint-to-system-takeover",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "agent-as-attacker",
+        "commodity",
+        "no-zero-day",
+        "orchestration",
+        "cost-asymmetry"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Agent attribution rests on a live Cairn orchestration UI on the attack-origin IP plus machine-paced command patterns (chunked 1,800-byte output retrieval via error messages, pre-staged PrintSpoofer and GodPotato fallbacks, rapid error correction). Entry was an internet-facing Spring Batch / Apache Tomcat feature that accepted task descriptions without a login. ReliaQuest could not determine the model vendor or the degree of human approval."
+    },
+    {
+      "id": "agentcorruption-aws-agentcore-oct-2026",
+      "incidentDate": "2025-12-25",
+      "disclosureDate": "2026-10-08",
+      "actor": "zenity-labs-researchers",
+      "actorType": "vulnerability-researcher",
+      "target": "aws-bedrock-agentcore",
+      "targetType": "enterprise-agent-platform",
+      "discoveredBy": "zenity-labs",
+      "primarySource": "https://www.financialcontent.com/article/bizwire-2026-10-8-zenity-labs-discloses-agentcorruption-a-chain-of-aws-agentcore-flaws-that-allowed-one-prompt-to-take-over-all-agentcore-agents-within-an-aws-account-and-region",
+      "summary": "'AgentCorruption': a single prompt to one public-facing Amazon Bedrock AgentCore agent, using a basic HTTP tool to reach the instance metadata service, let researchers take over every AgentCore agent in the same AWS account and region - reading private conversations, downloading agent code packages (often holding keys and passwords), and persistently manipulating agent behavior",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "single-prompt-imds-to-cross-agent-takeover",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "enterprise-agent",
+        "cloud-iam",
+        "insecure-default",
+        "no-cve",
+        "vendor-disputed",
+        "cross-agent"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Disclosed at SecTor 2026 (Toronto) Oct 8, 2026; reported to AWS Dec 25, 2025. Root cause was AgentCore's overly broad default execution role, which granted read/write/delete across all agents in the account and region. AWS made IMDSv2 the default for new deployments and tightened the default role (no cross-agent invoke, no conversation read, no Secrets Manager read) but disputes severity, calling the behavior 'expected and documented'. The chain did not cross AWS account boundaries."
+    },
+    {
+      "id": "fireworks-ai-eval-credentials-oct-2026",
+      "incidentDate": "2026-10-06",
+      "disclosureDate": "2026-10-09",
+      "actor": "unattributed-third-party",
+      "actorType": "unknown-attacker",
+      "target": "fireworks-ai",
+      "targetType": "inference-platform",
+      "discoveredBy": "fireworks-ai",
+      "primarySource": "https://fireworks.ai/security/bulletins/october-2026-security-incident",
+      "summary": "An unauthorized third party used internal Fireworks AI credentials to read the environment variables of evaluation jobs in a limited number of customer accounts, likely capturing customer API keys and third-party tokens stored as secrets",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "internal-credential-misuse-eval-env-var-exposure",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "supply-chain",
+        "credential-theft",
+        "vendor-side",
+        "no-cve",
+        "agent-infrastructure"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Vendor bulletin, still marked 'active monitoring'. Detected Oct 6, 2026; affected customers notified Oct 7 and 9; employee keys rotated Oct 9; further user keys and service-account tokens revoked Oct 10. Fireworks says customer models, datasets and inference traffic were not reached and that it does not store prompts/outputs by default; its review of calls made with the exposed credentials was still in progress. Revoking the Fireworks key does not invalidate the third-party secrets it exposed."
     }
   ],
   "stats": {
-    "medianLagDays": 74,
-    "asOf": "2026-10-05",
+    "medianLagDays": 72,
+    "asOf": "2026-10-12",
     "lagDays": {
       "rubyhack-may-2026": 123,
       "transluce-unm-may-2026": 121,
@@ -1287,7 +1474,12 @@
       "openai-third-party-notifications-oct-2026": 0,
       "openai-nsw-bushfire-oct-2026": 109,
       "manus-salt-labs-hijack-sep-2026": 0,
-      "google-gemini-three-companies-may-2026": 126
+      "google-gemini-three-companies-may-2026": 126,
+      "wikimedia-rogue-agents-oct-2026": 157,
+      "copilot-cli-cci-oct-2026": 19,
+      "reliaquest-agent-server-takeover-oct-2026": 0,
+      "agentcorruption-aws-agentcore-oct-2026": 287,
+      "fireworks-ai-eval-credentials-oct-2026": 3
     },
     "newThisWeek": {
       "rubyhack-may-2026": false,
@@ -1319,11 +1511,16 @@
       "cve-2026-63127-rmcp-oauth-sep-2026": false,
       "openai-github-token-leak-may-2026": false,
       "hf-dockerhub-supply-chain-jul-2026": false,
-      "pixelleak-glow-labs-sep-2026": true,
-      "openai-third-party-notifications-oct-2026": true,
-      "openai-nsw-bushfire-oct-2026": true,
+      "pixelleak-glow-labs-sep-2026": false,
+      "openai-third-party-notifications-oct-2026": false,
+      "openai-nsw-bushfire-oct-2026": false,
       "manus-salt-labs-hijack-sep-2026": false,
-      "google-gemini-three-companies-may-2026": false
+      "google-gemini-three-companies-may-2026": false,
+      "wikimedia-rogue-agents-oct-2026": true,
+      "copilot-cli-cci-oct-2026": true,
+      "reliaquest-agent-server-takeover-oct-2026": true,
+      "agentcorruption-aws-agentcore-oct-2026": true,
+      "fireworks-ai-eval-credentials-oct-2026": true
     }
   }
 }
