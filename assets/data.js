@@ -1681,6 +1681,19 @@ window.DASH = {
       "reliaquest-agent-server-takeover-oct-2026": false,
       "agentcorruption-aws-agentcore-oct-2026": false,
       "fireworks-ai-eval-credentials-oct-2026": false
+    },
+    "responsibility": {
+      "totals": {
+        "OpenAI": 20,
+        "Criminal / commodity attacker": 3,
+        "Anthropic": 2,
+        "Unattributed": 1,
+        "Moonshot AI": 1,
+        "Unattributed production agent": 1,
+        "Google": 1
+      },
+      "excludedResearchers": 14,
+      "explanation": "Counts only the perpetrator. Vulnerability-researcher actorType entries are excluded \u2014 those are the people who found and reported the incident, not the party responsible for it."
     }
   }
 };

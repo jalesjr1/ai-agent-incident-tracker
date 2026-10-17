@@ -2,11 +2,13 @@
 """Build AI Agent Incident Tracker: incidents.json -> assets/data.js.
 
 Reads data/incidents.json, computes derived stats (median lag, lagDays per
-incident, new-this-week flags), and writes a browser-consumable data.js
-exposing them as window.DASH. Also syncs computed totals back into
-incidents.json.metadata so the envelope stays honest.
+incident, new-this-week flags, responsible-party rollup), and writes a
+browser-consumable data.js exposing them as window.DASH. Also syncs
+computed totals back into incidents.json.metadata so the envelope stays
+honest.
 """
 import json, os, sys, datetime
+from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "data", "incidents.json")
@@ -15,6 +17,29 @@ OUT = os.path.join(ROOT, "assets", "data.js")
 def days(a, b):
     return (datetime.datetime.strptime(b, "%Y-%m-%d")
             - datetime.datetime.strptime(a, "%Y-%m-%d")).days
+
+# Map (actor string, actorType) -> responsible company. Researchers/discoverers
+# map to None and are excluded from the responsibility chart.
+def responsible_company(actor, actor_type):
+    a = actor.lower()
+    if actor_type == "vulnerability-researcher":
+        return None
+    if "openai" in a: return "OpenAI"
+    if "moonshot" in a or "kimi" in a: return "Moonshot AI"
+    if "anthropic" in a: return "Anthropic"
+    if "google" in a or "gemini" in a: return "Google"
+    if "microsoft" in a or "copilot" in a or "mai-code" in a: return "Microsoft"
+    if "hugging" in a: return "Hugging Face"
+    if "aws" in a or "amazon" in a or "bedrock" in a: return "AWS/Amazon"
+    if "fireworks" in a: return "Fireworks AI"
+    if "manus" in a: return "Manus"
+    if "criminal" in a or actor_type in ("commodity-attacker", "unknown-attacker"):
+        return "Criminal / commodity attacker"
+    if "unattributed" in a or "unknown" in a:
+        return "Unattributed"
+    if "production-coding" in a or actor_type in ("production-agent-deployment",):
+        return "Unattributed production agent"
+    return None
 
 def main():
     with open(SRC) as f:
@@ -29,11 +54,32 @@ def main():
     week_ago = (today - datetime.timedelta(days=7)).isoformat()
     new_this_week = {i["id"]: i["disclosureDate"] >= week_ago for i in inc}
 
+    # Responsible-party rollup (perpetrators only; researchers excluded)
+    resp_counts = defaultdict(int)
+    resp_excluded = 0
+    for i in inc:
+        c = responsible_company(i["actor"], i["actorType"])
+        if c:
+            resp_counts[c] += 1
+        else:
+            resp_excluded += 1
+    responsibility = {
+        "totals": dict(sorted(resp_counts.items(), key=lambda x: -x[1])),
+        "excludedResearchers": resp_excluded,
+        "explanation": (
+            "Counts only the perpetrator. Vulnerability-researcher "
+            "actorType entries are excluded — those are the people who "
+            "found and reported the incident, not the party responsible "
+            "for it."
+        ),
+    }
+
     data["stats"] = {
         "medianLagDays": median,
         "asOf": today.isoformat(),
         "lagDays": lag,
         "newThisWeek": new_this_week,
+        "responsibility": responsibility,
     }
     data["metadata"]["totalIncidents"] = len(inc)
     data["metadata"]["disclosureLagMedianDays"] = median
@@ -51,6 +97,8 @@ def main():
     print(f"  incidents: {len(inc)}")
     print(f"  median disclosure lag: {median} days")
     print(f"  new this week (>= {week_ago}): {sum(new_this_week.values())}")
+    print(f"  responsibility (perpetrators): {dict(resp_counts)}")
+    print(f"  excluded as researchers: {resp_excluded}")
     print("  metadata synced back to incidents.json")
 
 if __name__ == "__main__":
