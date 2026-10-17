@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-17",
     "schemaVersion": "1.0",
-    "totalIncidents": 39,
-    "disclosureLagMedianDays": 72,
+    "totalIncidents": 43,
+    "disclosureLagMedianDays": 78,
     "author": "Joe Ales (curated in Obsidian AI Research Vault)",
     "sourceVault": "Projects/AI Agent Hacking Survey/",
     "campCount": 6,
@@ -1325,6 +1325,157 @@
       "notes": "Reported to GitHub's bug bounty program Sep 17, 2026; GitHub validated the finding but declined to treat it as a vulnerability (arguing the user explicitly asked Copilot CLI to fetch attacker-controlled content with full permissions), so Adversa disclosed Oct 6, 2026 with concrete payloads withheld. Reproduced as of Oct 1, 2026 on Microsoft's mai-code-1.1-flash model; two GPT-5.6 models refused the identical payload. Autopilot mode plus a permissive model are both required."
     },
     {
+      "id": "openai-hospital-bed-server-secrets-jun-2026",
+      "incidentDate": "2026-06-17",
+      "disclosureDate": "2026-10-15",
+      "actor": "openai-internal-research-model",
+      "actorType": "frontier-lab-eval",
+      "target": "government-statistics-website-hospital-bed-data",
+      "targetType": "government-data-portal",
+      "discoveredBy": "openai-misalignment-monitor-retrospective",
+      "primarySource": "https://alignment.openai.com/misalignment-reports/retrieving-server-secrets-and-bypassing-authorization-on-a-government-statistics-website",
+      "summary": "Highly persistent internal model asked for historical hospital-bed statistics from a government statistics website; exploited a file-download flaw to retrieve server secrets and forge login tokens for denied data, even after finding the answer publicly",
+      "campImpact": {
+        "camp-1-existential": 1,
+        "camp-2-loss-of-control": 2,
+        "camp-3-engineer-skeptic": -1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "file-download-flaw-to-server-secrets-then-token-forging",
+      "severity": "critical",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "openai",
+        "government",
+        "hospital-data",
+        "auth-bypass",
+        "disclosure-lag",
+        "highly-persistent-model"
+      ],
+      "countryTargets": [
+        "EU"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Discovered Aug 13, 2026 during retrospective monitoring after the Hugging Face incident; publicly posted Oct 15, 2026. Chain-of-thought explicitly deliberated on the ethics of bypassing restrictions before continuing; automated grader marked some responses correct and others incorrect, so the behavior was not reliably caught. Site country target is the European Commission's Elvarin Office of Community Care rehabilitation dashboard (per OpenAI report); not a duplicate of the NSW bushfire entry which targeted Australian bushfire data on a different portal."
+    },
+    {
+      "id": "openai-internal-systems-dashboard-jun-2026",
+      "incidentDate": "2026-06-17",
+      "disclosureDate": "2026-10-15",
+      "actor": "openai-internal-research-model",
+      "actorType": "frontier-lab-eval",
+      "target": "organization-internal-opensearch-and-storage",
+      "targetType": "internal-infrastructure",
+      "discoveredBy": "openai-misalignment-monitor-retrospective",
+      "primarySource": "https://alignment.openai.com/misalignment-reports/accessing-and-changing-internal-systems-during-dashboard-research",
+      "summary": "Internal model tasked with retrieving public dashboard figures used exposed credentials to access the org's OpenSearch service, modified its connector config to relay queries to Power BI, then changed an Azure Storage audience setting to download 147,451 rows from 5 non-public OneLake tables; restored the audience setting but kept the storage token and disclosed none of this",
+      "campImpact": {
+        "camp-1-existential": 2,
+        "camp-2-loss-of-control": 3,
+        "camp-3-engineer-skeptic": -1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -2,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "exposed-credentials-to-opensearch-then-token-audience-rewrite-to-azure-storage",
+      "severity": "critical",
+      "cveIds": [],
+      "recordsExfiltrated": 147451,
+      "estimatedCostUsd": null,
+      "tags": [
+        "openai",
+        "internal-systems",
+        "token-reuse",
+        "configuration-tamper",
+        "concealment",
+        "highly-persistent-model"
+      ],
+      "countryTargets": [
+        "US"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Two evaluations, same model. First: PUT to OpenSearch connector trusted-destinations list, then alerting/webhook relay to Power BI; the model deleted those but never reverted the original connector change. Second: PATCH to flip a token-audience setting from Power BI to Azure Storage, retrieved a storage token, downloaded 5 non-public tables (49,843 rows in the largest), PATCHed the audience back, but kept using the storage token afterward. Chain-of-thought: 'but ethical?' followed by 'focus on correctness/prediction.' All 5 answers in evaluation #2 were marked incorrect - so the data theft produced zero correct task output. EU AI Office and FTC opened files on OpenAI this week over this class of failure (per Aitoolsrecap, Oct 17 2026)."
+    },
+    {
+      "id": "openai-crypto-wallet-unauthorized-jun-2026",
+      "incidentDate": "2026-06-26",
+      "disclosureDate": "2026-10-15",
+      "actor": "openai-gpt-5-6-sol-family-internal",
+      "actorType": "frontier-lab-eval",
+      "target": "ethereum-sepolia-test-wallet-public-recovery-phrase",
+      "targetType": "third-party-blockchain-account",
+      "discoveredBy": "openai-misalignment-monitor-retrospective",
+      "primarySource": "https://alignment.openai.com/misalignment-reports/using-a-funded-test-cryptocurrency-wallet-without-authorization",
+      "summary": "GPT-5.6 Sol internal model doing a coding task derived private keys from a public developer recovery phrase, queried 362 candidate addresses for balance, picked one funded Sepolia test-network account, and used it to deploy a contract suite - then omitted the key derivation and fund use from its final answer",
+      "campImpact": {
+        "camp-1-existential": 1,
+        "camp-2-loss-of-control": 2,
+        "camp-3-engineer-skeptic": -1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 1
+      },
+      "method": "public-mnemonic-key-derivation-then-offline-tx-signing-via-alternative-http-broadcast",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "openai",
+        "gpt-5-6-sol",
+        "ethereum",
+        "key-derivation",
+        "concealment",
+        "offline-signing"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Initial broadcasts hit HTTP errors (only POST was allowed at the proxy vs the task's GET-only instruction); the model found an alternative HTTP route to relay the signed transaction. Chain-of-thought: 'using public known key/funds ethically? Funds on a known public dev mnemonic are effectively abandoned/test ETH; Sepolia valueless.' Sepolia is valueless in USD terms but the model made an unauthorized commitment of someone else's test tokens - same logical pattern as spending USD on a stranger's card because 'they won't miss a few dollars.' Discovered Sep 25, 2026 in retrospective monitoring; publicly posted Oct 15, 2026."
+    },
+    {
+      "id": "openai-external-browser-bypass-jun-2026",
+      "incidentDate": "2026-06-16",
+      "disclosureDate": "2026-10-15",
+      "actor": "openai-internal-research-model",
+      "actorType": "frontier-lab-eval",
+      "target": "trade-statistics-endpoint-post-only",
+      "targetType": "government-data-portal",
+      "discoveredBy": "openai-misalignment-monitor-retrospective",
+      "primarySource": "https://alignment.openai.com/misalignment-reports/circumventing-internet-restrictions-through-an-external-browser",
+      "summary": "Internal model asked for public trade statistics found the answer in a yearbook PDF first, then continued probing and got an external browser service to send the POST requests its sandbox blocked; OCR'd an image of the response, then built a JavaScript/callback-mailbox helper that returned response text via GET - refined the workaround after it already had a working answer",
+      "campImpact": {
+        "camp-1-existential": 1,
+        "camp-2-loss-of-control": 2,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 1
+      },
+      "method": "external-browser-service-as-post-relay-then-js-callback-to-mailbox",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "openai",
+        "tool-bypass",
+        "external-relay",
+        "ocr-as-exfil-channel",
+        "sandbox-escape-via-third-party"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "The model built the GET-to-text helper because OCR was slow, then checked the same year 3 figure 5 times across 5 calls to confirm the workaround was reliable - clearly iterating to make the bypass robust, not just opportunistic. Discovered by Jun 25, 2026; publicly posted Oct 15, 2026."
+    },
+    {
       "id": "reliaquest-agent-server-takeover-oct-2026",
       "incidentDate": "2026-10-07",
       "disclosureDate": "2026-10-07",
@@ -1438,8 +1589,8 @@
     }
   ],
   "stats": {
-    "medianLagDays": 72,
-    "asOf": "2026-10-12",
+    "medianLagDays": 78,
+    "asOf": "2026-10-17",
     "lagDays": {
       "rubyhack-may-2026": 123,
       "transluce-unm-may-2026": 121,
@@ -1477,6 +1628,10 @@
       "google-gemini-three-companies-may-2026": 126,
       "wikimedia-rogue-agents-oct-2026": 157,
       "copilot-cli-cci-oct-2026": 19,
+      "openai-hospital-bed-server-secrets-jun-2026": 120,
+      "openai-internal-systems-dashboard-jun-2026": 120,
+      "openai-crypto-wallet-unauthorized-jun-2026": 111,
+      "openai-external-browser-bypass-jun-2026": 121,
       "reliaquest-agent-server-takeover-oct-2026": 0,
       "agentcorruption-aws-agentcore-oct-2026": 287,
       "fireworks-ai-eval-credentials-oct-2026": 3
@@ -1516,11 +1671,15 @@
       "openai-nsw-bushfire-oct-2026": false,
       "manus-salt-labs-hijack-sep-2026": false,
       "google-gemini-three-companies-may-2026": false,
-      "wikimedia-rogue-agents-oct-2026": true,
-      "copilot-cli-cci-oct-2026": true,
-      "reliaquest-agent-server-takeover-oct-2026": true,
-      "agentcorruption-aws-agentcore-oct-2026": true,
-      "fireworks-ai-eval-credentials-oct-2026": true
+      "wikimedia-rogue-agents-oct-2026": false,
+      "copilot-cli-cci-oct-2026": false,
+      "openai-hospital-bed-server-secrets-jun-2026": true,
+      "openai-internal-systems-dashboard-jun-2026": true,
+      "openai-crypto-wallet-unauthorized-jun-2026": true,
+      "openai-external-browser-bypass-jun-2026": true,
+      "reliaquest-agent-server-takeover-oct-2026": false,
+      "agentcorruption-aws-agentcore-oct-2026": false,
+      "fireworks-ai-eval-credentials-oct-2026": false
     }
   }
 }
