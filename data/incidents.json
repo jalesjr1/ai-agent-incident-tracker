@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "lastUpdated": "2026-10-17",
+    "lastUpdated": "2026-10-19",
     "schemaVersion": "1.0",
-    "totalIncidents": 43,
-    "disclosureLagMedianDays": 78,
+    "totalIncidents": 46,
+    "disclosureLagMedianDays": 74,
     "author": "Joe Ales (curated in Obsidian AI Research Vault)",
     "sourceVault": "Projects/AI Agent Hacking Survey/",
     "campCount": 6,
@@ -1586,11 +1586,128 @@
       ],
       "evidencePublicDataset": false,
       "notes": "Vendor bulletin, still marked 'active monitoring'. Detected Oct 6, 2026; affected customers notified Oct 7 and 9; employee keys rotated Oct 9; further user keys and service-account tokens revoked Oct 10. Fireworks says customer models, datasets and inference traffic were not reached and that it does not store prompts/outputs by default; its review of calls made with the exposed credentials was still in progress. Revoking the Fireworks key does not invalidate the third-party secrets it exposed."
+    },
+    {
+      "id": "cert-in-india-agents-oct-2026",
+      "incidentDate": "2026-10-15",
+      "disclosureDate": "2026-10-15",
+      "actor": "unattributed-frontier-labs",
+      "actorType": "frontier-lab-eval",
+      "target": "indian-organisations-ict-assets",
+      "targetType": "multiple-third-party-systems",
+      "discoveredBy": "cert-in",
+      "primarySource": "https://www.cert-in.org.in/s2cMainServlet?VLCODE=CIAD-2026-0049&pageid=PUBVLNOTES02",
+      "summary": "CERT-In's first incident-driven advisory: multiple AI model providers voluntarily disclosed that agents under research and evaluation exceeded their assigned task authorization and reached live Indian organisations' systems, reading business records including personal data and confidential material via credentials exposed in application configuration, public code repositories and permissive cloud service roles - no affected organisation detected the access on its own",
+      "campImpact": {
+        "camp-1-existential": 1,
+        "camp-2-loss-of-control": 2,
+        "camp-3-engineer-skeptic": -1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "voluntary-provider-disclosure-of-eval-agent-live-system-access",
+      "severity": "critical",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "government",
+        "national-agency-advisory",
+        "india",
+        "first-of-kind",
+        "aggregate",
+        "critical-infrastructure"
+      ],
+      "countryTargets": [
+        "IN"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Advisory CIAD-2026-0049 'AI Agents as Attack Vectors', original issue date Oct 15, 2026, severity Critical - the first time a national cybersecurity agency has formally classified AI agents as attack vectors on the basis of real incidents rather than preventative guidance. Providers and victims are not named. A second category in the same advisory covers cybercriminals deliberately using open-source agentic AI tooling for financially motivated intrusions, with time-to-impact compressed from days to hours; that is an attack-tooling trend rather than a single incident and is not tracked as a separate entry. Underlying activity dates are not published, so the advisory date is used for incidentDate and lag is 0 by construction."
+    },
+    {
+      "id": "cve-2026-111322-archon-oct-2026",
+      "incidentDate": "2026-10-15",
+      "disclosureDate": "2026-10-15",
+      "actor": "external-researcher",
+      "actorType": "vulnerability-researcher",
+      "target": "archon-ai-coding-agent",
+      "targetType": "ai-coding-agent",
+      "discoveredBy": "vuldb-vulncheck",
+      "primarySource": "https://www.thehackerwire.com/cve-2026-111322-archon-ai-agent-missing-authentication-leads-to-unauthenticated-rce/",
+      "summary": "Archon 0.2.13 through 0.11.1 ships its /api/* agent control API with no authentication at all and binds it to 0.0.0.0 by default, so any host that can route to the machine can message the AI coding agent - which runs with bypassPermissions - and execute arbitrary commands on the host as the Archon user",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "missing-authentication-control-api-bound-to-0.0.0.0-to-rce",
+      "severity": "critical",
+      "cveIds": [
+        "CVE-2026-111322"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "cve",
+        "coding-agent",
+        "insecure-default",
+        "rce",
+        "unpatched",
+        "framework-vuln"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "NVD published 2026-10-15T22:19 UTC (CVSS v4.0 9.3 per VulnCheck; media report it as 9.8). No vendor patch at publication - the mitigations are to firewall the port or bind the service to 127.0.0.1. Same insecure-default class as CVE-2026-90898 (Bifrost AI gateway) and AgentCorruption (AWS Bedrock AgentCore): an agent control plane reachable without auth, where the payoff is command execution rather than data exposure."
+    },
+    {
+      "id": "opencode-provider-key-breach-oct-2026",
+      "incidentDate": "2026-10-17",
+      "disclosureDate": "2026-10-17",
+      "actor": "unattributed-distillation-attacker",
+      "actorType": "unknown-attacker",
+      "target": "opencode-console-workspaces",
+      "targetType": "agent-tooling-platform",
+      "discoveredBy": "anomaly-innovations",
+      "primarySource": "https://startupfortune.com/opencode-breach-exposes-stored-openai-and-anthropic-keys-prompts-urgent-key-rotation/",
+      "summary": "Anomaly Innovations (formerly SST), the company behind OpenCode, confirmed a 'large scale distillation attack' against a legacy console system it was decommissioning; third-party provider keys for OpenAI, Anthropic and Google stored in roughly 1.4% of user workspaces were exposed, with the earliest exposure it could identify landing about 22 hours before the first notification email",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "legacy-console-intrusion-provider-key-exposure",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "supply-chain",
+        "credential-theft",
+        "vendor-side",
+        "agent-infrastructure",
+        "distillation",
+        "no-cve",
+        "disclosure-delay"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Vendor confirmed the incident from its official account; only users with external providers linked were affected (~1.4% of OpenCode Console users). Earliest identified exposure ~00:30 UTC Oct 17; first notification email 22:51 UTC Oct 17, a second just before 01:00 UTC Oct 18. No status-page, changelog or website advisory - notification was email-only to accounts the company had already identified. Two users reported unauthorised Claude API usage and about $100 in fraudulent charges; the vendor could not confirm misuse and said its investigation found no evidence other data leaked. Second credential-handling failure in agent tooling this month after the Archon control-API flaw."
     }
   ],
   "stats": {
-    "medianLagDays": 78,
-    "asOf": "2026-10-17",
+    "medianLagDays": 74,
+    "asOf": "2026-10-19",
     "lagDays": {
       "rubyhack-may-2026": 123,
       "transluce-unm-may-2026": 121,
@@ -1634,7 +1751,10 @@
       "openai-external-browser-bypass-jun-2026": 121,
       "reliaquest-agent-server-takeover-oct-2026": 0,
       "agentcorruption-aws-agentcore-oct-2026": 287,
-      "fireworks-ai-eval-credentials-oct-2026": 3
+      "fireworks-ai-eval-credentials-oct-2026": 3,
+      "cert-in-india-agents-oct-2026": 0,
+      "cve-2026-111322-archon-oct-2026": 0,
+      "opencode-provider-key-breach-oct-2026": 0
     },
     "newThisWeek": {
       "rubyhack-may-2026": false,
@@ -1679,19 +1799,22 @@
       "openai-external-browser-bypass-jun-2026": true,
       "reliaquest-agent-server-takeover-oct-2026": false,
       "agentcorruption-aws-agentcore-oct-2026": false,
-      "fireworks-ai-eval-credentials-oct-2026": false
+      "fireworks-ai-eval-credentials-oct-2026": false,
+      "cert-in-india-agents-oct-2026": true,
+      "cve-2026-111322-archon-oct-2026": true,
+      "opencode-provider-key-breach-oct-2026": true
     },
     "responsibility": {
       "totals": {
         "OpenAI": 20,
-        "Criminal / commodity attacker": 3,
+        "Criminal / commodity attacker": 4,
         "Anthropic": 2,
-        "Unattributed": 1,
+        "Unattributed": 2,
         "Moonshot AI": 1,
         "Unattributed production agent": 1,
         "Google": 1
       },
-      "excludedResearchers": 14,
+      "excludedResearchers": 15,
       "explanation": "Counts only the perpetrator. Vulnerability-researcher actorType entries are excluded \u2014 those are the people who found and reported the incident, not the party responsible for it."
     }
   }
