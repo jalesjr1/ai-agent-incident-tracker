@@ -33,6 +33,8 @@ def responsible_company(actor, actor_type):
     if "aws" in a or "amazon" in a or "bedrock" in a: return "AWS/Amazon"
     if "fireworks" in a: return "Fireworks AI"
     if "manus" in a: return "Manus"
+    if "storm-0940" in a or actor_type == "state-aligned-attacker":
+        return "State-aligned (Storm-0940)"
     if "criminal" in a or actor_type in ("commodity-attacker", "unknown-attacker"):
         return "Criminal / commodity attacker"
     if "unattributed" in a or "unknown" in a:

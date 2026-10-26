@@ -175,6 +175,7 @@
     if (a.indexOf('aws') >= 0 || a.indexOf('amazon') >= 0 || a.indexOf('bedrock') >= 0) return 'AWS/Amazon';
     if (a.indexOf('fireworks') >= 0) return 'Fireworks AI';
     if (a.indexOf('manus') >= 0) return 'Manus';
+    if (a.indexOf('storm-0940') >= 0 || t === 'state-aligned-attacker') return 'State-aligned (Storm-0940)';
     if (a.indexOf('criminal') >= 0 || t === 'commodity-attacker' || t === 'unknown-attacker') return 'Criminal / commodity attacker';
     if (a.indexOf('unattributed') >= 0 || a.indexOf('unknown') >= 0) return 'Unattributed';
     if (a.indexOf('production-coding') >= 0 || t === 'production-agent-deployment') return 'Unattributed production agent';
