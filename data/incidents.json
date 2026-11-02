@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "lastUpdated": "2026-10-26",
+    "lastUpdated": "2026-11-02",
     "schemaVersion": "1.0",
-    "totalIncidents": 59,
-    "disclosureLagMedianDays": 50,
+    "totalIncidents": 65,
+    "disclosureLagMedianDays": 28,
     "author": "Joe Ales (curated in Obsidian AI Research Vault)",
     "sourceVault": "Projects/AI Agent Hacking Survey/",
     "campCount": 6,
@@ -2214,11 +2214,251 @@
       ],
       "evidencePublicDataset": false,
       "notes": "CVSS 8.5, CWE-78. Filed as a public GitHub issue on Oct 20, 2026 because Aider has no dedicated security reporting channel; VulnCheck published the advisory Oct 23 with no maintainer response, no assignee, no linked fix. Same class as GitSpawn (untrusted repository as executable input) and as the plugin-pin and hook attacks of September. Confirmed on both 0.86.2 and the development branch at commit 5dc9490."
+    },
+    {
+      "id": "warp-vendor-agent-traces-oct-2026",
+      "incidentDate": "2026-10-23",
+      "disclosureDate": "2026-10-26",
+      "actor": "unattributed-attacker",
+      "actorType": "unknown-attacker",
+      "target": "warp-agentic-development-environment",
+      "targetType": "agent-tooling-platform",
+      "discoveredBy": "warp-and-crowdstrike",
+      "primarySource": "https://www.bleepingcomputer.com/news/security/warp-discloses-breach-exposing-ai-agent-logs-user-telemetry-data/",
+      "summary": "An attacker exploited a third-party vendor inside Warp's infrastructure and reached the telemetry pipeline behind Warp's agentic development environment, exposing agent decision logs - agent traces - and user telemetry for roughly 1% of Warp's 800,000+ users; Warp says it detected the operation within hours and remediated it, engaged CrowdStrike and notified law enforcement",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 1
+      },
+      "method": "third-party-vendor-compromise-to-agent-telemetry-exfiltration",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "agent-traces",
+        "telemetry",
+        "third-party-vendor",
+        "supply-chain",
+        "breach",
+        "agent-logs-as-crown-jewels"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "CEO Zach Lloyd disclosed the incident publicly on Oct 26 after detecting it on Friday Oct 23; BleepingComputer reported it Oct 27. Warp has not named the vendor, the vulnerability, or whether the traces contained source code, prompts or credentials, which is the part that matters: an agent trace typically carries file fragments, commands and terminal output. Reporting describes the intrusion as an 'agent swarm' using a sophisticated penetration and escalation technique, but that characterization is analysis, not a Warp or CrowdStrike finding. Follows the OpenCode provider-key breach of Oct 17 (about 1.4% of users, charges up to $1,700) and reads as the second consecutive incident where the compromise lands on agent-side data rather than customer databases."
+    },
+    {
+      "id": "cve-2026-118668-langgraph-store-oct-2026",
+      "incidentDate": "2026-09-28",
+      "disclosureDate": "2026-10-28",
+      "actor": "external-researcher",
+      "actorType": "vulnerability-researcher",
+      "target": "langgraph-api",
+      "targetType": "agent-framework",
+      "discoveredBy": "coinspect",
+      "primarySource": "https://github.com/langchain-ai/langgraph/security/advisories/GHSA-4hm6-w6qq-w73v",
+      "summary": "In LangGraph's JavaScript authorisation path, the sidecar rewrote requests into the logged-in user's namespace but the Python bridge copied back only metadata and dropped the rewrite, so the Store acted on the original unscoped namespace - letting any authenticated user, or an agent running with that user's access, read, search, overwrite or delete another tenant's long-term memories, preferences and documents (CVE-2026-118668, CVSS v4 8.6)",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 1,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 1
+      },
+      "method": "cross-language-authorization-rewrite-drop-to-cross-tenant-store-access",
+      "severity": "high",
+      "cveIds": [
+        "CVE-2026-118668"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "cve",
+        "agent-framework",
+        "cross-tenant",
+        "missing-authorization",
+        "memory-store",
+        "langgraph"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Coinspect completed source review and a proof against langgraph-api 0.10.0 on Jun 15, 2026, submitted privately Jun 16, and LangChain published GHSA-4hm6-w6qq-w73v and the 0.15.0 fix on Sep 28; the CVE record itself landed Oct 28, which is why scanners lit up this week. Affected range >=0.1.2,<0.15.0 with JS/TS custom auth through the Python runtime's sidecar and a multi-user Store. Python auth handlers and JS handlers that reject rather than rewrite namespaces are unaffected. The pattern is the same one the Cursor and MCP bugs keep showing: a security decision is made in one language and re-implemented as a handoff in another, and the value actually used is the one the second component reconstructs."
+    },
+    {
+      "id": "cve-2026-115415-strands-env-mask-oct-2026",
+      "incidentDate": "2026-10-28",
+      "disclosureDate": "2026-10-28",
+      "actor": "external-researcher",
+      "actorType": "vulnerability-researcher",
+      "target": "strands-agents-tools",
+      "targetType": "agent-toolkit",
+      "discoveredBy": "aws-security",
+      "primarySource": "https://aws.amazon.com/security/security-bulletins/2026-154-aws/",
+      "summary": "The environment tool in AWS's Strands Agents Tools let the model turn off its own secret masking through the tool schema, so a crafted prompt delivered in content the agent was asked to process could call the tool with masking disabled and get the agent host's environment variables back in cleartext - cloud credentials and API keys - with no operator consent (CVE-2026-115415)",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "model-controlled-tool-parameter-disables-credential-masking",
+      "severity": "high",
+      "cveIds": [
+        "CVE-2026-115415"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "cve",
+        "agent-toolkit",
+        "prompt-injection",
+        "credential-theft",
+        "safety-switch-in-tool-schema",
+        "aws"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "AWS bulletin 2026-154-AWS, published Oct 28, covers strands-agents-tools >=0.1.0 and <0.8.6; masking is now operator-only and the environment tool is deprecated. Note the timing gap: 0.8.6 shipped to PyPI on Aug 7, 82 days before the advisory, so installs following the package's own latest release were already fixed while anyone pinned to the tool's earlier behaviour was not. The design lesson is that a guard against prompt injection was itself an argument the model could set - the same failure shape as DeepSeek Harness letting an agent switch its own session to danger-full-access in September."
+    },
+    {
+      "id": "cve-2026-35002-agno-eval-oct-2026",
+      "incidentDate": "2026-10-27",
+      "disclosureDate": "2026-10-27",
+      "actor": "external-researcher",
+      "actorType": "vulnerability-researcher",
+      "target": "agno-agent-framework",
+      "targetType": "agent-framework",
+      "discoveredBy": "security-researcher",
+      "primarySource": "https://github.com/advisories/GHSA-m4w4-3r8h-jw98",
+      "summary": "Agno passed the field_type parameter of a FunctionCall input field straight into Python's eval(), so anyone able to influence that value - a request, a web UI, or most usefully untrusted model or tool output - executed arbitrary Python in the agent process: prompt injection to RCE (CVE-2026-35002, CVSS 3.1 9.8)",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": 0,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "eval-injection-on-model-supplied-tool-schema-value",
+      "severity": "critical",
+      "cveIds": [
+        "CVE-2026-35002"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "cve",
+        "agent-framework",
+        "eval-injection",
+        "prompt-injection",
+        "rce",
+        "agno"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "CWE-95, full confidentiality, integrity and availability impact, no privileges or user interaction required in the vector. Fixed in Agno 2.3.24, which replaces the eval() call. Published to the GitHub Advisory Database Oct 27, six days after the 10-21-to-10-23 batch that included mem0ai (9.2), AgenticSeek (9.2) and req_llm (9.1) - the largest cluster of framework-severity scores in a single week this tracker has recorded. Agno also shipped a separate PandasTools flaw (through 3.1.11) reported Oct 29 where injected prompts reach arbitrary pandas calls and local file reads."
+    },
+    {
+      "id": "vulncheck-mcp-shell-batch-oct-2026",
+      "incidentDate": "2026-10-27",
+      "disclosureDate": "2026-10-27",
+      "actor": "external-researcher",
+      "actorType": "vulnerability-researcher",
+      "target": "mcp-server-ecosystem",
+      "targetType": "mcp-server",
+      "discoveredBy": "vulncheck",
+      "primarySource": "https://nvd.nist.gov/vuln/detail/CVE-2026-117567",
+      "summary": "Four VulnCheck-assigned OS command-injection CVEs published to NVD within the same minute across ESP32, ffmpeg, offensive-scanner and embedded-tooling MCP servers - esp-mcp (7.8), mcp-ffmpeg (7.0), Kali-GPT (7.8) and hagent (7.8) - each interpolating agent-chosen tool parameters into a shell string, so an agent steered by injected content carries the metacharacters and executes commands as the MCP server user",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": 1,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "tool-parameter-to-shell-interpolation-across-mcp-servers",
+      "severity": "high",
+      "cveIds": [
+        "CVE-2026-117567",
+        "CVE-2026-117568",
+        "CVE-2026-117569",
+        "CVE-2026-117573"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "cve",
+        "mcp",
+        "command-injection",
+        "prompt-injection",
+        "unpatched",
+        "ecosystem-pattern"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Records read first-hand on NVD: esp-mcp sends target, port, project_path and project_name to asyncio.create_subprocess_shell and names the prompt-injection path explicitly; mcp-ffmpeg builds a child_process.exec string in its resize-video, extract-audio and get-video-info tools; Kali-GPT runs target, ports, domain, wordlist and url through subprocess.run(shell=True); hagent interpolates args into arduino-cli and idf.py. None of the four names a fixed release at publication. Reporting the same day counted nine VulnCheck command-injection CVEs across MCP servers and agent tooling, adding sf-mcp, DroidMind, an ai-sdlc MCP server, an ATXP Gemini CLI extension and an nmap-mcp NSE allowlist. All four here are scored local-vector, low-privilege: not unauthenticated internet RCE, but reachable by any agent whose input an attacker can influence. Fifth MCP shell-injection batch in October - the tool-call boundary, not the model, is where these keep failing."
+    },
+    {
+      "id": "parameter-chatgpt-share-link-oct-2026",
+      "incidentDate": "2026-10-18",
+      "disclosureDate": "2026-10-28",
+      "actor": "external-researcher",
+      "actorType": "vulnerability-researcher",
+      "target": "chatgpt-shared-conversation-preview",
+      "targetType": "consumer-agent-platform",
+      "discoveredBy": "parameter",
+      "primarySource": "https://www.parameter.ai/labs/we-found-a-gap-at-openai",
+      "summary": "A publicly shared ChatGPT conversation could run attacker JavaScript inside the signed-in session of anyone who opened the link: the HTML Preview frame crossed into the main chatgpt.com page through MathLive's postMessage listener, which accepted messages from any origin and joined the supplied keyboard layout into innerHTML, letting the payload list the victim's conversations, read a private chat that had never been shared, exfiltrate it and act on the account through ChatGPT's authenticated APIs - no app install, no paste, no developer tools",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 1,
+        "camp-4-move-fast": -1,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 1
+      },
+      "method": "cross-frame-postmessage-bypass-to-same-origin-session-hijack",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "prompt-free",
+        "sandbox-bypass",
+        "postmessage",
+        "session-hijack",
+        "data-exfiltration",
+        "openai",
+        "feature-seam"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Reported through OpenAI's bug bounty on Oct 18, 2026, rated P1 and fixed Oct 26; Parameter published Oct 28, with coverage through Oct 31 and a $5,000 bounty reported by secondary sources (not confirmed by OpenAI). No prompt injection anywhere in the chain: the boundary that failed was the seam between public sharing, the HTML Preview sandbox, a third-party math library and the content security policy. That is why it belongs in this dataset - it is the same 'trusted component reads what the untrusted component wrote' failure as Pillar's sandbox-escape week and the .aider.conf.yml RCE, and it is the third OpenAI disclosure this quarter where the agent's own UI, not the model, was the exploitable surface."
     }
   ],
   "stats": {
-    "medianLagDays": 50,
-    "asOf": "2026-10-26",
+    "medianLagDays": 28,
+    "asOf": "2026-11-02",
     "lagDays": {
       "rubyhack-may-2026": 123,
       "transluce-unm-may-2026": 121,
@@ -2278,7 +2518,13 @@
       "sekoia-flowise-honeypot-oct-2026": 55,
       "norforge-cairn-panels-oct-2026": 0,
       "cve-2026-103091-google-agent-mesh-oct-2026": 0,
-      "cve-2026-115726-aider-conf-oct-2026": 3
+      "cve-2026-115726-aider-conf-oct-2026": 3,
+      "warp-vendor-agent-traces-oct-2026": 3,
+      "cve-2026-118668-langgraph-store-oct-2026": 30,
+      "cve-2026-115415-strands-env-mask-oct-2026": 0,
+      "cve-2026-35002-agno-eval-oct-2026": 0,
+      "vulncheck-mcp-shell-batch-oct-2026": 0,
+      "parameter-chatgpt-share-link-oct-2026": 10
     },
     "newThisWeek": {
       "rubyhack-may-2026": false,
@@ -2327,24 +2573,30 @@
       "cert-in-india-agents-oct-2026": false,
       "cve-2026-111322-archon-oct-2026": false,
       "opencode-provider-key-breach-oct-2026": false,
-      "openai-monitoring-disable-oct-2026": true,
-      "storm-0940-artex-connectwise-oct-2026": true,
-      "litellm-supply-chain-oct-2026": true,
-      "bugster-telegram-agent-oct-2026": true,
-      "crowdstrike-four-claude-code-campaigns-oct-2026": true,
-      "carliy0s-cybercartel-oct-2026": true,
-      "wiz-cirt-agent-cloud-intrusion-oct-2026": true,
-      "socradar-inc-gentlemen-opencode-oct-2026": true,
-      "skynet-llmjacking-symantec-oct-2026": true,
-      "sekoia-flowise-honeypot-oct-2026": true,
-      "norforge-cairn-panels-oct-2026": true,
-      "cve-2026-103091-google-agent-mesh-oct-2026": true,
-      "cve-2026-115726-aider-conf-oct-2026": true
+      "openai-monitoring-disable-oct-2026": false,
+      "storm-0940-artex-connectwise-oct-2026": false,
+      "litellm-supply-chain-oct-2026": false,
+      "bugster-telegram-agent-oct-2026": false,
+      "crowdstrike-four-claude-code-campaigns-oct-2026": false,
+      "carliy0s-cybercartel-oct-2026": false,
+      "wiz-cirt-agent-cloud-intrusion-oct-2026": false,
+      "socradar-inc-gentlemen-opencode-oct-2026": false,
+      "skynet-llmjacking-symantec-oct-2026": false,
+      "sekoia-flowise-honeypot-oct-2026": false,
+      "norforge-cairn-panels-oct-2026": false,
+      "cve-2026-103091-google-agent-mesh-oct-2026": false,
+      "cve-2026-115726-aider-conf-oct-2026": false,
+      "warp-vendor-agent-traces-oct-2026": true,
+      "cve-2026-118668-langgraph-store-oct-2026": true,
+      "cve-2026-115415-strands-env-mask-oct-2026": true,
+      "cve-2026-35002-agno-eval-oct-2026": true,
+      "vulncheck-mcp-shell-batch-oct-2026": true,
+      "parameter-chatgpt-share-link-oct-2026": true
     },
     "responsibility": {
       "totals": {
         "OpenAI": 21,
-        "Criminal / commodity attacker": 13,
+        "Criminal / commodity attacker": 14,
         "Anthropic": 2,
         "Unattributed": 2,
         "Moonshot AI": 1,
@@ -2352,7 +2604,7 @@
         "Google": 1,
         "State-aligned (Storm-0940)": 1
       },
-      "excludedResearchers": 17,
+      "excludedResearchers": 22,
       "explanation": "Counts only the perpetrator. Vulnerability-researcher actorType entries are excluded \u2014 those are the people who found and reported the incident, not the party responsible for it."
     }
   }
