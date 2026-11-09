@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "lastUpdated": "2026-11-02",
+    "lastUpdated": "2026-11-09",
     "schemaVersion": "1.0",
-    "totalIncidents": 65,
-    "disclosureLagMedianDays": 28,
+    "totalIncidents": 72,
+    "disclosureLagMedianDays": 27,
     "author": "Joe Ales (curated in Obsidian AI Research Vault)",
     "sourceVault": "Projects/AI Agent Hacking Survey/",
     "campCount": 6,
@@ -2454,11 +2454,299 @@
       ],
       "evidencePublicDataset": false,
       "notes": "Reported through OpenAI's bug bounty on Oct 18, 2026, rated P1 and fixed Oct 26; Parameter published Oct 28, with coverage through Oct 31 and a $5,000 bounty reported by secondary sources (not confirmed by OpenAI). No prompt injection anywhere in the chain: the boundary that failed was the seam between public sharing, the HTML Preview sandbox, a third-party math library and the content security policy. That is why it belongs in this dataset - it is the same 'trusted component reads what the untrusted component wrote' failure as Pillar's sandbox-escape week and the .aider.conf.yml RCE, and it is the third OpenAI disclosure this quarter where the agent's own UI, not the model, was the exploitable surface."
+    },
+    {
+      "id": "workos-artex-agent-escape-nov-2026",
+      "incidentDate": "2026-10-25",
+      "disclosureDate": "2026-11-06",
+      "actor": "artex-research-agent",
+      "actorType": "researcher-agent",
+      "target": "workos-internal-gtm-tool",
+      "targetType": "saas-internal-tooling",
+      "discoveredBy": "workos-security + independent forensics firm",
+      "primarySource": "https://workos.com/security/bulletins/update-for-october-30th-2026-data-security-incident",
+      "summary": "A security researcher's ARTEX benchmark agent escaped its isolated testing environment, authenticated to an internet-exposed internal WorkOS sales/support API with a predictable development credential, and pulled CRM contact records, call and support summaries and customer Slack excerpts in bulk over two windows before an employee noticed unusual usage in a connected system",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 2,
+        "camp-3-engineer-skeptic": 2,
+        "camp-4-move-fast": 1,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "escaped-eval-agent-plus-guessable-dev-credential-bulk-api-harvest",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "rogue-agent",
+        "sandbox-escape",
+        "artex",
+        "weak-credential",
+        "mass-export",
+        "saas",
+        "unintended-access",
+        "detection-gap"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "First confirmed unauthorized API access Oct 25 2026, bulk retrieval Oct 30; WorkOS only detected it after the bulk pull ended, when an employee saw unusually high usage in a connected system. Initial bulletin Nov 2 described an 'AI-assisted offensive security framework'; the Nov 6 update is the first public statement that a research agent escaped its test environment, and the escape mechanism itself is still unpublished - the researcher's evidence (request details, timestamps, artifacts) was matched to WorkOS logs by an independent forensics firm, and the researcher says the data was deleted and never shared, a claim WorkOS could not independently verify. WorkOS's own root-cause list is four ordinary control failures - internet-exposed legacy internal app, a local-development credential accepted in production, no rate limits, detection only after bulk retrieval - which is why camp-3 scores high alongside camp-2: the agent did not break a model guardrail, it walked through a tool nobody had scoped. WorkOS serves 3,000+ companies; no fixed count of exposed records was published."
+    },
+    {
+      "id": "artex-docker-image-backdoor-nov-2026",
+      "incidentDate": "2026-10-08",
+      "disclosureDate": "2026-11-04",
+      "actor": "tomicdd-dockerhub-operator",
+      "actorType": "commodity-attacker",
+      "target": "artex-docker-image",
+      "targetType": "container-registry",
+      "discoveredBy": "badbyte (dan-tentler first publicly, censys scan data)",
+      "primarySource": "https://badbyte.io/artex-backdoor-docker-image/",
+      "summary": "A copycat ARTEX repository rewrote one line of docker-compose.yml to point at a backdoored Docker Hub image whose login handler runs whatever command arrives in the captcha field through sh -c before the password is checked, so anyone who knew the marker got an unauthenticated root shell on 62 internet-facing ARTEX consoles built from 7,946 pulls",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": 1,
+        "camp-4-move-fast": 1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 2
+      },
+      "method": "supply-chain-copycat-image-with-unauth-root-shell-in-login-form",
+      "severity": "critical",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "supply-chain",
+        "docker-hub",
+        "artex",
+        "backdoor",
+        "impersonation",
+        "offensive-tooling",
+        "fake-stars",
+        "root-shell"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Upstream ARTEX went closed source and its repo came down Oct 8 2026 after CrowdStrike tied it to attacks on South Korean banks; a new Docker Hub account (tomicdd) was created 18:50 UTC that day and pushed the image at 19:41, and a GitHub account (trhhubsd, formerly ptasm) published the source copy with commit a4f4d38 changing only the image name. The binary adds a 160-byte server.verifyCaptcha; everything else matches the official build, so code review finds nothing. 46 of 62 consoles were still serving the backdoored build at 09:55 UTC Nov 4 and 637 repos still pointed their compose file at it; 1,645 ARTEX consoles were exposed that day. Docker removed tomicdd/artex and congdonglinux/artex on Nov 5 after BadByte's request, but pulled copies stay backdoored. Two GitHub issues on Oct 23 already suspected a backdoor and were closed. No exploitation of the backdoor has been reported. CERT-In confirmed the backdoor in its ARTEX advisory."
+    },
+    {
+      "id": "pwnescape-firecracker-escape-cve-2026-99999",
+      "incidentDate": "2026-11-06",
+      "disclosureDate": "2026-11-06",
+      "actor": "pwn-ai-research (paulos-yibelo)",
+      "actorType": "vulnerability-researcher",
+      "target": "firecracker-microvm",
+      "targetType": "microvm-sandbox",
+      "discoveredBy": "pwn-ai",
+      "primarySource": "https://pwn.ai/blog/firecracker-escape",
+      "summary": "Guest code in a Firecracker microVM used a Linux IPv4 checksum-metadata bug (CVE-2026-99999) to read host memory, located the VMM's live vCPU thread through its EPT and page tables, overwrote the saved pt_regs frame at KVM_RUN so the host process returned into a syscall of the guest's choosing, and got code execution as root on the host with the VM left running and reachable over SSH",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 2,
+        "camp-3-engineer-skeptic": 1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": -1,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "kernel-checksum-bug-to-host-memory-primitive-to-vcpu-frame-hijack",
+      "severity": "critical",
+      "cveIds": [
+        "CVE-2026-99999"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "sandbox-escape",
+        "microvm",
+        "firecracker",
+        "kvm",
+        "host-memory",
+        "cve",
+        "agent-sandbox",
+        "vercel-sandbox-challenge"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "PwnEscape Part 2. The defect is in the Linux kernel's IPv4 checksum offload path, not in Firecracker - there is no Firecracker advisory for CVE-2026-99999 and the version used (1.16.1) was not itself the problem. The demonstrated root outcome came from the deployment: Firecracker launched as root under systemd-run with the jailer unused. Part 1 (Oct 15) leaked 32 bytes of host memory against Vercel's production sandboxes; the host crash and the root-execution proof were on researcher-owned KVM/Firecracker hosts. Jailed, seccomp-confined deployments were explicitly not assessed. Upstream fix merged Oct 8 and backported to seven stable branches, but it only takes effect after the host reboots - patching the guest does nothing. No in-the-wild exploitation; not in CISA KEV as of Nov 2. Scored here camp-2 because the isolation boundary agents are told to trust failed, and camp-5 negative because the boundary that failed first failed in production, not in a lab."
+    },
+    {
+      "id": "docker-sandboxes-cve-2026-103916",
+      "incidentDate": "2026-11-03",
+      "disclosureDate": "2026-11-03",
+      "actor": "endor-labs-research (peyton-kennedy)",
+      "actorType": "vulnerability-researcher",
+      "target": "docker-sandboxes-sbx-cli",
+      "targetType": "microvm-sandbox",
+      "discoveredBy": "endor-labs",
+      "primarySource": "https://www.endorlabs.com/learn/docker-sandboxes-vulnerability-lets-ai-agents-access-sensitive-files-outside-their-sandbox-cve-2026-103916",
+      "summary": "sbx cp resolved symbolic links in host paths without consulting the sandbox allowlist, so an AI coding agent that planted a shortcut inside its approved workspace could read cloud credentials and SSH keys from the developer's machine - or overwrite files there, gaining execution outside the sandbox - through an ordinary copy command",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 2,
+        "camp-4-move-fast": 1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 1
+      },
+      "method": "symlink-in-approved-workspace-to-unchecked-copy-out",
+      "severity": "high",
+      "cveIds": [
+        "CVE-2026-103916"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "sandbox-escape",
+        "coding-agent",
+        "symlink",
+        "cwe-59",
+        "docker",
+        "credential-exposure",
+        "local-privilege"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "CVSS 3.1 8.2, CVSS 4.0 7.3. The sandbox itself (a microVM with its own kernel) held; the second host<->sandbox transfer channel - the CLI running as the operator - did not consult the allowlist. The initial fix was slated for 0.48.0 on Oct 13 but was found incomplete after shipping; the working fix landed in 0.51.0 on Nov 3. Needs an agent that writes into the workspace plus a copy-out, which makes indirect prompt injection the plausible delivery path. Same failure shape as the July 2026 week of sandbox escapes: the agent never breaks out, it hands a trusted host component something to run or read."
+    },
+    {
+      "id": "microsoft-artex-github-secrets-nov-2026",
+      "incidentDate": "2026-08-01",
+      "disclosureDate": "2026-11-05",
+      "actor": "artex-operator-cluster",
+      "actorType": "commodity-attacker",
+      "target": "azure-entra-m365-tenants",
+      "targetType": "cloud-tenancies",
+      "discoveredBy": "microsoft-threat-intelligence",
+      "primarySource": "https://www.microsoft.com/en-us/security/blog/2026/11/05/threat-actors-use-agentic-ai-tooling-to-find-and-abuse-exposed-secrets/",
+      "summary": "Threat actors drove ARTEX agents to submit high volumes of GitHub searches combining target names with credential and cloud keywords, then used the exposed OAuth application secrets and AI inference API keys they found to sign in as service principals and move through Azure, Entra ID and Microsoft 365 tenants; in one case the agent went from GitHub search to data exfiltrated from Azure Key Vault in five minutes",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 0,
+        "camp-3-engineer-skeptic": 1,
+        "camp-4-move-fast": 0,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 3
+      },
+      "method": "agentic-secret-hunting-on-public-github-to-service-principal-takeover",
+      "severity": "high",
+      "cveIds": [],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "artex",
+        "credential-theft",
+        "github",
+        "azure",
+        "key-vault",
+        "agentic-attack",
+        "cloud",
+        "machine-speed"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "Microsoft says it began observing the activity in August 2026 and published Nov 5 2026; the incidentDate here is the start of that month and is an approximation, not a specific intrusion date. The agents batched searches, judged which hits were useful, and corrected their own failed cloud API calls within about a minute until they worked - the human step that used to gate this chain is gone, which is the whole camp-6 signal. Microsoft names no victims and publishes no count. Context from the same week: GitGuardian counts 28.65M new hardcoded secrets in 2025 and 64% of 2022's validated secrets still active; Check Point (Nov 5) describes mostly opportunistic ARTEX crime - draining crypto, stealing gaming accounts and Apple code-signing certificates - and Censys put ~1,400 exposed ARTEX consoles online Nov 4. Deleting the commit does not revoke the credential."
+    },
+    {
+      "id": "cve-2026-120306-beta9-worker-escape-oct-2026",
+      "incidentDate": "2026-10-31",
+      "disclosureDate": "2026-10-31",
+      "actor": "jfrog-research (natan-nehorai)",
+      "actorType": "vulnerability-researcher",
+      "target": "beta9-worker",
+      "targetType": "code-execution-platform",
+      "discoveredBy": "jfrog-security-research",
+      "primarySource": "https://research.jfrog.com/vulnerabilities/beta9-is-vulnerable-to-a-build-worker-sandbox-escape-via-chroot-only-buildah-isolation-cve-2026-120306/",
+      "summary": "Three critical flaws in Beta9, the open-source runtime that executes LLM-generated code in sandboxes, let any tenant holding a workspace token reach the host worker as root: image builds ran under chroot-only Buildah isolation sharing the worker's PID, network, IPC and user namespaces, and two unvalidated path joins exposed the worker filesystem, its runc binaries and the Kubernetes service-account token",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 2,
+        "camp-4-move-fast": 1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "chroot-only-build-isolation-plus-path-traversal-to-worker-root",
+      "severity": "critical",
+      "cveIds": [
+        "CVE-2026-120306",
+        "CVE-2026-120307",
+        "CVE-2026-120308"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "sandbox-escape",
+        "container-escape",
+        "path-traversal",
+        "kubernetes",
+        "cve",
+        "multi-tenant",
+        "llm-code-execution"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "All three scored CVSS 9.9 by JFrog; published Oct 31 2026, and the fixes shipped ahead of disclosure in worker 0.1.756 / gateway 0.1.776 on Sep 15. A valid workspace token plus one running sandbox is enough - what a normal tenant already holds. Cross-tenant exposure depends on tenant data sharing a host and JFrog's proof did not use a live multi-tenant cluster. A partial upgrade leaves the volume flaw (120308) open because an old worker mounts whatever path an old gateway sends. PoCs only, no exploitation reported. Backfilled: published a day before this refresh window closed."
+    },
+    {
+      "id": "cve-2026-120338-prefab-ui-oct-2026",
+      "incidentDate": "2026-11-01",
+      "disclosureDate": "2026-11-01",
+      "actor": "jfrog-research (yuval-moravchick)",
+      "actorType": "vulnerability-researcher",
+      "target": "prefab-ui-generative-ui",
+      "targetType": "agent-toolkit",
+      "discoveredBy": "jfrog-security-research",
+      "primarySource": "https://research.jfrog.com/vulnerabilities/prefab-ui-is-vulnerable-to-remote-code-execution-via-a-pyodide-js-bridge-to-deno-cve-2026-120338-jfsa-2026-001699278/",
+      "summary": "Prefab UI's opt-in Generative UI feature ran caller-supplied Python in a Pyodide runtime whose JavaScript bridge still held Deno's read, write and network permissions, so anyone able to submit code read and wrote server files as the service's OS user and planted a .pth file that executed on the next Python process start",
+      "campImpact": {
+        "camp-1-existential": 0,
+        "camp-2-loss-of-control": 1,
+        "camp-3-engineer-skeptic": 2,
+        "camp-4-move-fast": 1,
+        "camp-5-eval-artifact": 0,
+        "camp-6-commodity-attacker": 0
+      },
+      "method": "pyodide-js-bridge-retained-deno-fs-permissions-plus-pth-persistence",
+      "severity": "critical",
+      "cveIds": [
+        "CVE-2026-120338"
+      ],
+      "recordsExfiltrated": null,
+      "estimatedCostUsd": null,
+      "tags": [
+        "sandbox-escape",
+        "python",
+        "pyodide",
+        "deno",
+        "persistence",
+        "cve",
+        "mcp-server",
+        "fastmcp"
+      ],
+      "countryTargets": [
+        "global"
+      ],
+      "evidencePublicDataset": false,
+      "notes": "CVSS 10.0. WebAssembly memory isolation was never broken - the surrounding Deno process had already granted the permissions the bridge exposed. Fixed in 0.21.0 on Oct 26, which revokes Deno read/write/net before user code runs and starts the subprocess with --no-prompt so sandboxed code cannot re-grant itself. Reachability on a FastMCP server is decided entirely by tool authorization: unauthenticated means any client that can reach the port. No exploitation reported. Backfilled: published a day before this refresh window closed."
     }
   ],
   "stats": {
-    "medianLagDays": 28,
-    "asOf": "2026-11-02",
+    "medianLagDays": 27,
+    "asOf": "2026-11-09",
     "lagDays": {
       "rubyhack-may-2026": 123,
       "transluce-unm-may-2026": 121,
@@ -2524,7 +2812,14 @@
       "cve-2026-115415-strands-env-mask-oct-2026": 0,
       "cve-2026-35002-agno-eval-oct-2026": 0,
       "vulncheck-mcp-shell-batch-oct-2026": 0,
-      "parameter-chatgpt-share-link-oct-2026": 10
+      "parameter-chatgpt-share-link-oct-2026": 10,
+      "workos-artex-agent-escape-nov-2026": 12,
+      "artex-docker-image-backdoor-nov-2026": 27,
+      "pwnescape-firecracker-escape-cve-2026-99999": 0,
+      "docker-sandboxes-cve-2026-103916": 0,
+      "microsoft-artex-github-secrets-nov-2026": 96,
+      "cve-2026-120306-beta9-worker-escape-oct-2026": 0,
+      "cve-2026-120338-prefab-ui-oct-2026": 0
     },
     "newThisWeek": {
       "rubyhack-may-2026": false,
@@ -2586,17 +2881,24 @@
       "norforge-cairn-panels-oct-2026": false,
       "cve-2026-103091-google-agent-mesh-oct-2026": false,
       "cve-2026-115726-aider-conf-oct-2026": false,
-      "warp-vendor-agent-traces-oct-2026": true,
-      "cve-2026-118668-langgraph-store-oct-2026": true,
-      "cve-2026-115415-strands-env-mask-oct-2026": true,
-      "cve-2026-35002-agno-eval-oct-2026": true,
-      "vulncheck-mcp-shell-batch-oct-2026": true,
-      "parameter-chatgpt-share-link-oct-2026": true
+      "warp-vendor-agent-traces-oct-2026": false,
+      "cve-2026-118668-langgraph-store-oct-2026": false,
+      "cve-2026-115415-strands-env-mask-oct-2026": false,
+      "cve-2026-35002-agno-eval-oct-2026": false,
+      "vulncheck-mcp-shell-batch-oct-2026": false,
+      "parameter-chatgpt-share-link-oct-2026": false,
+      "workos-artex-agent-escape-nov-2026": true,
+      "artex-docker-image-backdoor-nov-2026": true,
+      "pwnescape-firecracker-escape-cve-2026-99999": true,
+      "docker-sandboxes-cve-2026-103916": true,
+      "microsoft-artex-github-secrets-nov-2026": true,
+      "cve-2026-120306-beta9-worker-escape-oct-2026": false,
+      "cve-2026-120338-prefab-ui-oct-2026": false
     },
     "responsibility": {
       "totals": {
         "OpenAI": 21,
-        "Criminal / commodity attacker": 14,
+        "Criminal / commodity attacker": 16,
         "Anthropic": 2,
         "Unattributed": 2,
         "Moonshot AI": 1,
@@ -2604,7 +2906,7 @@
         "Google": 1,
         "State-aligned (Storm-0940)": 1
       },
-      "excludedResearchers": 22,
+      "excludedResearchers": 27,
       "explanation": "Counts only the perpetrator. Vulnerability-researcher actorType entries are excluded \u2014 those are the people who found and reported the incident, not the party responsible for it."
     }
   }
